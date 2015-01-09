@@ -1,0 +1,26 @@
+
+ceph:
+  lookup:
+    version: firefly
+  config:
+    global:
+      fsid: 00000000-0000-0000-0000-000000000000
+      network_public: 10.0.0.0/24
+      network_cluster: 10.0.0.0/24
+  instances:
+      mon:
+        - id: a
+          host: ceph-test1
+          addr: 10.0.0.2:6789
+      osd:
+        - id: 0
+          host: ceph-test1
+          devs: /dev/vdb
+        - id: 1
+          host: ceph-test1
+          devs: /dev/vdc
+  keyrings:
+    - name: cinder
+      key: 00000000000000000000000000000000000000==
+    - name: glance
+      key: 00000000000000000000000000000000000000==

@@ -1,0 +1,58 @@
+{% set ceph=salt["grains.filter_by"]({
+  "Debian": {
+    "name": "ceph",
+    "pkg": "ceph",
+    "version": "firefly",
+  },
+  "default": {
+    "name": "ceph",
+    "pkg": "ceph",
+    "version": "firefly",
+  }
+},merge=salt["pillar.get"]("ceph:lookup")) %}
+
+# Set the ceph default config
+{%- set ceph_config = {
+  "global": {
+    "fsid": "generate fsid with uuidgen",
+    "auth cluster required": "cephx",
+    "auth service required": "cephx",
+    "auth client required": "cephx",
+    "cephx require signatures": "true",
+    "cephx cluster require signatures": "true",
+    "cephx service require signatures": "true",
+    "mon osd full ratio": "90",
+    "mon osd nearfull ratio": "85",
+    "network_public": "10.0.0.0/24",
+    "network_cluster": "10.0.0.0/24",
+  },
+  "client": {
+    "rbd cache": "true",
+    "rbd cache writethrough until flush": "true",
+  },
+  "mon": {
+    "mon data": "/var/lib/ceph/mon/$cluster-$id",
+    "mon initial members": "a",
+    "mon warn on legacy crush tunables": "false",
+  },
+  "osd": {
+    "osd journal": "/var/lib/ceph/osd/$cluster-$id/journal",
+    "osd journal size": "10240",
+    "osd mkfs type": "xfs",
+    "osd data": "/var/lib/ceph/osd/$cluster-$id",
+    "osd client op priority": "63",
+    "osd recovery op priority": "2",
+    "osd recovery max active": "1",
+    "osd max backfills": "1",
+  }
+} %}
+
+{% for section, value in salt["pillar.get"]("ceph:config", {}).iteritems() %}
+  {% if not ceph_config.has_key(section) %}
+    {% do ceph_config.update({ section:{} }) %}
+  {% endif %}
+  {% do ceph_config[section].update(value) %}
+{% endfor %}
+
+{#- vim:ft=sls
+-#}
