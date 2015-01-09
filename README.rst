@@ -23,12 +23,12 @@ Includes .repo, .mon and .osd states.
 
 Configures ceph repository
 
-``ceph.mon``
+``TODO: ceph.mon``
 ---------------------
 
 Install, configure, enable and start Ceph MON service
 
-``ceph.osd``
+``TODO: ceph.osd``
 -------------------
 
 Install, configure, enable and start Ceph OSD service
